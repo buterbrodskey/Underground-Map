@@ -4,15 +4,25 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MetroLine<Station> extends ArrayList<Station> {
+public class MetroLine {
     private COLOR color;
     private String name;
+
+    NodeStation Head;
+    NodeStation Tail;
+    NodeStation CurrentStation;
+
+    void initStationList() {
+        Head = new NodeStation(new Station("",COLOR.UNDEFINED));
+        Tail = new NodeStation(new Station("",COLOR.UNDEFINED));
+    }
 
     Set<COLOR> colorSwitchSet = new HashSet<>();
 
     public MetroLine(String name) {
         this.name = name;
         setColor(name);
+        initStationList();
     }
 
     public String getName() {
@@ -21,6 +31,18 @@ public class MetroLine<Station> extends ArrayList<Station> {
 
     public COLOR getColor() {
         return color;
+    }
+
+    boolean add(Station station) {
+        NodeStation temp = new NodeStation(station);
+        if (!Head.hasNext()) {
+            Head.setNext(temp);
+        }
+        CurrentStation = Tail;
+        CurrentStation.setNext(temp);
+        Tail = temp;
+        Tail.setPrev(CurrentStation);
+        return true;
     }
 
     private void setColor(String name) {
@@ -33,7 +55,7 @@ public class MetroLine<Station> extends ArrayList<Station> {
             case "Сокольническая" -> color = COLOR.RED;
             case "Филевская" -> color = COLOR.SKY;
             case "Арбатско-Покровская" -> color = COLOR.BLUE;
-            case "от" -> color = COLOR.GRAY;
+            case "Серпуховско-Тимирязевская" -> color = COLOR.GRAY;
             case "Каховская" -> color = COLOR.AZURE;
             case "Кольцевая" -> color = COLOR.BROWN;
             case "Замоскворецкая" -> color = COLOR.GREEN;
@@ -75,8 +97,21 @@ public class MetroLine<Station> extends ArrayList<Station> {
                 name + " линия." + " цвет: =" + color +
                 ", Возможны пересадки на ветки: " + colorSwitchSet +
                 '}');
-        super.forEach(System.out::println);
+        CurrentStation = Head;
+        do {
+            CurrentStation = CurrentStation.getNext();
+            System.out.println("\t" + CurrentStation);
+        } while (CurrentStation.hasNext());
         System.out.println();
+    }
+
+    NodeStation getNodeStation(String name) {
+        CurrentStation = Head;
+        do {
+            CurrentStation = CurrentStation.getNext();
+            if (CurrentStation.station.getName().equals(name)) return CurrentStation;
+        } while (CurrentStation.hasNext());
+        return null;
     }
 
     @Override
