@@ -85,7 +85,6 @@ public class StationContainerInit {
         return null;
     }
 
-
     private void addAllStation(ArrayList<NodeStation> stations) throws FileNotFoundException {
         File file = new File("src/Resources/StationList");
         Scanner scanner = new Scanner(file);

@@ -45,20 +45,20 @@ public class NodeStation {
 
     @Override
     public String toString() {
-//        if (next == null) {
-//            return station.toString();
-//        }
-//        else {
+        if (next == null) {
+            return station.toString();
+        }
+        else {
             String result = new String();
             for (int i = 0; i < transferStation.size(); i++) {
                 result += transferStation.get(i).station.getName()+ "(" +(MetroLine.getColorFromEcode(transferStation.get(i).station.getColor())) + ") ";
             }
-//            if (result.equals(""))
-//                return station.toString();
-//            else
+            if (result.equals(""))
+                return station.toString();
+            else
             return
                     station +
                             " Переход(ы) на: " + result;
-        //}
+        }
     }
 }
