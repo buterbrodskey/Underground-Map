@@ -33,8 +33,8 @@ public class MetroLine {
         return color;
     }
 
-    boolean add(Station station) {
-        NodeStation temp = new NodeStation(station);
+    boolean add(NodeStation station) {
+        NodeStation temp = station;
         if (!Head.hasNext()) {
             Head.setNext(temp);
         }
@@ -47,6 +47,10 @@ public class MetroLine {
 
     private void setColor(String name) {
         color = getECodeFromColor(name);
+    }
+
+    boolean isEmpty() {
+        return !Head.hasNext();
     }
 
     static COLOR getECodeFromColor(String name) {

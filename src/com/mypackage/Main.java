@@ -1,15 +1,10 @@
 package com.mypackage;
 
-import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class Main {
 
     public static void main(String[] args) {
-        try {
-            new StationContainerInit().initUnderground();
-        } catch (FileNotFoundException e) {
-        }
-
-
+            ArrayList<MetroLine> underground = new StationContainerInit().initUnderground();
     }
 }

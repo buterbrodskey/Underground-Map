@@ -11,14 +11,14 @@ public class NodeStation {
 
     private ArrayList<NodeStation> transferStation = new ArrayList<>();
 
-    boolean addTransStation(NodeStation station) {
+    boolean addTransferStation(NodeStation station) {
         return transferStation.add(station);
     }
-
 
     NodeStation(Station station) {
         this.station = station;
     }
+
     boolean hasNext() {
         return next!= null;
     }
@@ -45,27 +45,20 @@ public class NodeStation {
 
     @Override
     public String toString() {
-        if (next == null) {
-            return
-                    station +
-                    //", prev=" + prev.station.getName() +
-
-                    " Переход(ы) на: " + transferStation.toString() +
-                    '}';
-        }
-        else {
+//        if (next == null) {
+//            return station.toString();
+//        }
+//        else {
             String result = new String();
             for (int i = 0; i < transferStation.size(); i++) {
                 result += transferStation.get(i).station.getName()+ "(" +(MetroLine.getColorFromEcode(transferStation.get(i).station.getColor())) + ") ";
             }
-            if (result.equals(""))
-                return station.toString();
-            else
+//            if (result.equals(""))
+//                return station.toString();
+//            else
             return
                     station +
-                            //", prev = "  + prev.station.getName() +
-                            //", next = " + next.station.getName() +
                             " Переход(ы) на: " + result;
-        }
+        //}
     }
 }

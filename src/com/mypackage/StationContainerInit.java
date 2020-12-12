@@ -6,29 +6,31 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class StationContainerInit {
-    void initUnderground() throws FileNotFoundException {
-        ArrayList<Station> stations = new ArrayList<>();
+    ArrayList<MetroLine> initUnderground() {
+        ArrayList<NodeStation> stations = new ArrayList<>();
         ArrayList<MetroLine> Underground = new ArrayList<>();
 
-        addAllStation(stations);
-        addAllMetroLine(Underground);
+        try {
+            addAllStation(stations);
+            addAllTransfer(stations);
+            addAllMetroLine(Underground, stations);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        //Underground.stream().forEach(stations -> stations.info());
-
-
-//    MetroLine RedLine = Underground.get(0);
-//    MetroLine GreenLine = Underground.get(1);
-//    MetroLine BlueLine = Underground.get(2);
-//    MetroLine SkyLine = Underground.get(3);
-//    MetroLine BrownLine = Underground.get(4);
-//    MetroLine OrangeLine = Underground.get(5);
-//    MetroLine Violetline = Underground.get(6);
-//    MetroLine YellowSunLine = Underground.get(7);
-//    MetroLine YellowKalinynLine = Underground.get(8);
-//    MetroLine GrayLine = Underground.get(9);
-//    MetroLine LightGreenLine = Underground.get(10);
-//    MetroLine AzureLine = Underground.get(11);
-//    MetroLine LightBlueLine = Underground.get(12);
+        MetroLine RedLine = Underground.get(0);
+        MetroLine GreenLine = Underground.get(1);
+        MetroLine BlueLine = Underground.get(2);
+        MetroLine SkyLine = Underground.get(3);
+        MetroLine BrownLine = Underground.get(4);
+        MetroLine OrangeLine = Underground.get(5);
+        MetroLine Violetline = Underground.get(6);
+        MetroLine YellowSunLine = Underground.get(7);
+        MetroLine YellowKalinynLine = Underground.get(8);
+        MetroLine GrayLine = Underground.get(9);
+        MetroLine LightGreenLine = Underground.get(10);
+        MetroLine AzureLine = Underground.get(11);
+        MetroLine LightBlueLine = Underground.get(12);
 //
 //        addTrans(RedLine,"Парк Культуры",BrownLine, "Парк Культуры");
 //
@@ -47,9 +49,44 @@ public class StationContainerInit {
 //        addTrans(RedLine,"Комсомольская",BrownLine, "Комсомольская");
 //
 //        RedLine.info();
+        return Underground;
     }
 
-    void addAllStation(ArrayList<Station> stations) throws FileNotFoundException {
+    private void addAllTransfer(ArrayList<NodeStation> stations) throws FileNotFoundException {
+        File file = new File("src/Resources/TransferStationListLite");
+        Scanner scanner = new Scanner(file);
+        String rootLine;
+        String rootStation;
+        String transferLine;
+        String transferStation;
+
+
+        while (scanner.hasNextLine()) {
+
+            rootLine = scanner.nextLine();
+            rootStation = scanner.nextLine();
+
+            while (scanner.hasNextLine()) {
+
+                transferLine = scanner.nextLine();
+                if (transferLine.equals("")) break;
+                transferStation = scanner.nextLine();
+
+                getStation(stations, rootStation, MetroLine.getECodeFromColor(rootLine))
+                        .addTransferStation(getStation(stations, transferStation, MetroLine.getECodeFromColor(transferLine)));
+            }
+        }
+    }
+
+    private NodeStation getStation(ArrayList<NodeStation> stations, String name, COLOR color) {
+        for (NodeStation station : stations) {
+            if (station.station.getName().equals(name) && station.station.getColor() == color) return station;
+        }
+        return null;
+    }
+
+
+    private void addAllStation(ArrayList<NodeStation> stations) throws FileNotFoundException {
         File file = new File("src/Resources/StationList");
         Scanner scanner = new Scanner(file);
         String temp;
@@ -65,54 +102,31 @@ public class StationContainerInit {
                     if (scanner.hasNextLine()) {
                         temp = scanner.nextLine();
                         if (temp.equals("") || temp.contains("линия") || temp.contains("ветка")) break;
-                        stations.add(new Station(temp,tempColor));
-                    }
-
-                    else break;
+                        stations.add(new NodeStation(new Station(temp, tempColor)));
+                    } else break;
 
                 }
             }
         }
-        stations.forEach(station -> System.out.println(station.getName() + " " + station.getColor()));
+        //stations.forEach(station -> System.out.println(station.getName() + " " + station.getColor()));
     }
 
-    void addAllMetroLine(ArrayList<MetroLine> Underground) throws FileNotFoundException {
-        File file = new File("src/Resources/StationList");
-        Scanner scanner = new Scanner(file);
+    private void addAllMetroLine(ArrayList<MetroLine> Underground, ArrayList<NodeStation> stations) throws FileNotFoundException {
 
+        MetroLine tempMetroLine = null;
+        COLOR tempColor = COLOR.UNDEFINED;
 
-        MetroLine tempMetroLine;
-        String temp;
-        String tempLine;
-        int i = 0;
+        for (NodeStation station : stations) {
 
-        while (scanner.hasNextLine()) {
-            temp = scanner.nextLine();
+            if (tempColor != station.station.getColor()) {
 
-
-            if (temp.contains("линия") || temp.contains("ветка")) {
-                tempLine = temp.replaceAll("(линия|ветка):", "").trim();
-                tempMetroLine = new MetroLine(tempLine);
-                while (true) {
-                    if (scanner.hasNextLine())
-                        temp = scanner.nextLine();
-                    else break;
-
-                    if (temp.equals("")|| temp.contains("линия") || temp.contains("ветка")) break;
-
-                    else tempMetroLine.add(new Station(temp,MetroLine.getECodeFromColor(tempLine)));
-
-                }
-                Underground.add(tempMetroLine);
+                if (tempMetroLine != null)
+                    Underground.add(tempMetroLine);
+                tempColor = station.station.getColor();
+                tempMetroLine = new MetroLine(MetroLine.getColorFromEcode(station.station.getColor()));
             }
+            tempMetroLine.add(station);
         }
-    }
-
-
-
-
-    boolean addTrans(MetroLine metroLine1, String name1, MetroLine metroLine2, String name2) {
-        metroLine1.getNodeStation(name1).addTransStation(metroLine2.getNodeStation(name2));
-        return true;
+        Underground.add(tempMetroLine);
     }
 }
